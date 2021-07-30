@@ -4,6 +4,8 @@ using Bogus;
 using Bogus.DataSets;
 using lesson5.Domain;
 using lesson5.Domain.Entities;
+using lesson5.lesson7.Repositories.Abstract;
+using lesson5.lesson7.Repositories.Concrate;
 using Microsoft.EntityFrameworkCore;
 
 namespace lesson5
@@ -13,65 +15,23 @@ namespace lesson5
         static ContextDB context = new ContextDB();
         static void Main(string[] args)
         {
-            //context.Database.EnsureCreated();
-            context.Database.Migrate();
-            SeedCategory();
-            SeedProduct();
+            //TestLesson6();
+            ICategoryRepository repository = new CategoryRepository(context);
+            //new Repository<Category>(context);
 
-            //foreach (var item in context.Categories)
-            //{
-            //    Console.WriteLine(item.Name);
-            //}
+            //var category = new Category();
 
-            //var query = context.Products.Select(x =>
-            //    new { x.Id, x.Name, CategoryName = x.Category.Name })
-            //    .AsQueryable();
+            //category.Name = "Salo";
 
-            //string name = "";
+            //repository.Add(category);
 
-            //if (!string.IsNullOrEmpty(name))
-            //{
-            //    query = query.Where(x => x.Name.Contains(name));
-            //}
+            //Category category = repository.FindById(17);
+            //Console.WriteLine(category.Name);
 
-            //string ggwp = "Tasty";
-            //query = query.Where(x => x.Name.Contains(ggwp));
-
-            //string cat = "Game";
-            //query = query.Where(x => x.CategoryName.Contains(cat));
-
-            //foreach (var item in query.ToList())
-            //{
-            //    Console.WriteLine($"Id: {item.Id}\n" +
-            //        $"Name: {item.Name}\n" +
-            //        $"Category: {item.CategoryName}\n");
-            //}
-            //foreach (var item in context.Products)
-            //{
-            //    Console.WriteLine($"Id: {item.Id}\n" +
-            //        $"Name: {item.Name}\n" +
-            //        $"Category: {item.Category.Name}\n");
-            //}
-
-
-            SeedUsers();
-            SeedRoles();
-            SeedUserRoles();
-
-            var query = context.Users
-                .Include(x => x.UserRoles)
-                .ThenInclude(x => x.Role)
-                .AsQueryable();
-
-            foreach (var user in query)
+            var items = repository.Get(x => x.Name.Contains("S"));
+            foreach (var item in items)
             {
-                Console.WriteLine($"UserId: {user.Id}\t UserNmae: {user.Name}");
-                Console.WriteLine("Roles:");
-                foreach (var roleUser in user.UserRoles)
-                {
-                    Console.Write($" {roleUser.RoleId} ");
-                }
-                Console.WriteLine();
+                Console.WriteLine(item.Name);
             }
             
         }
@@ -195,6 +155,70 @@ namespace lesson5
                 context.SaveChanges();
 
             }
+        }
+
+        static void TestLesson6()
+        {
+            context.Database.EnsureCreated();
+            context.Database.Migrate();
+            SeedCategory();
+            SeedProduct();
+
+            foreach (var item in context.Categories)
+            {
+                Console.WriteLine(item.Name);
+            }
+
+            var query = context.Products.Select(x =>
+                new { x.Id, x.Name, CategoryName = x.Category.Name })
+                .AsQueryable();
+
+            string name = "";
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(x => x.Name.Contains(name));
+            }
+
+            string ggwp = "Tasty";
+            query = query.Where(x => x.Name.Contains(ggwp));
+
+            string cat = "Game";
+            query = query.Where(x => x.CategoryName.Contains(cat));
+
+            foreach (var item in query.ToList())
+            {
+                Console.WriteLine($"Id: {item.Id}\n" +
+                    $"Name: {item.Name}\n" +
+                    $"Category: {item.CategoryName}\n");
+            }
+            foreach (var item in context.Products)
+            {
+                Console.WriteLine($"Id: {item.Id}\n" +
+                    $"Name: {item.Name}\n" +
+                    $"Category: {item.Category.Name}\n");
+            }
+
+
+            SeedUsers();
+            SeedRoles();
+            SeedUserRoles();
+
+            //var query = context.Users
+            //    .Include(x => x.UserRoles)
+            //    .ThenInclude(x => x.Role)
+            //    .AsQueryable();
+
+            //foreach (var user in query)
+            //{
+            //    Console.WriteLine($"UserId: {user.Id}\t UserNmae: {user.Name}");
+            //    Console.WriteLine("Roles:");
+            //    foreach (var roleUser in user.UserRoles)
+            //    {
+            //        Console.Write($" {roleUser.RoleId} ");
+            //    }
+            //    Console.WriteLine();
+            //}
         }
     }
 }
